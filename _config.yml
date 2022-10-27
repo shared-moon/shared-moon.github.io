@@ -16,10 +16,10 @@ minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "en-US"
-title                    : "공유공간"
+title                    : "Share's house"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
-name                     : "shared moon"
+name                     : "shared-moon"
 description              : ""
 url                      : "https://shared-moon.github.io/"
 baseurl                  : # the subpath of your site, e.g. "/blog"
@@ -101,9 +101,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "shared moon"
+  name             : "문공유"
   avatar           : "/assets/images/temp.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "백엔드 개발자"
+  bio              : ""
   location         :
   email            :
   links:
