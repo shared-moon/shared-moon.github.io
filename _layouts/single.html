@@ -70,15 +70,35 @@ layout: default
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
       <div class="grid__wrapper">
-        {% for post in site.related_posts limit:4 %}
-          {% include archive-single.html type="grid" %}
+        {% assign page_index = 0 %}
+        {% assign count = 0 %}
+        {% assign filtered_posts = site.posts | where: "related_key", page.related_key %}
+
+        {% for post in filtered_posts %}
+          {% if post.id == page.id %}
+            {% assign page_index = forloop.index0 %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+
+        {% assign begin_index = page_index | minus: 2 %}
+        {% assign end_index = page_index | plus: 2 %}
+
+        {% if begin_index < 0 %}
+          {% assign end_index = end_index | minus: begin_index %}
+        {% endif %}
+
+        {% for post in filtered_posts %}
+          {% if post.id != page.id and forloop.index0 >= begin_index and forloop.index0 <= end_index %}
+            {% include archive-single.html type="grid" %}
+          {% endif %}
         {% endfor %}
       </div>
     </div>
   {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
   {% elsif page.id and page.related %}
     <div class="page__related">
-      <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
+      <h2 class="page__related-title">또 다른 볼거리</h2>
       <div class="grid__wrapper">
         {% for post in site.posts limit:4 %}
           {% if post.id == page.id %}
@@ -89,4 +109,14 @@ layout: default
       </div>
     </div>
   {% endif %}
+</div>
+
+<div>
+  <script src="https://utteranc.es/client.js"
+          repo="shared-moon/shared-moon.github.io"
+          issue-term="url"
+          theme="github-light"
+          crossorigin="anonymous"
+          async>
+  </script>
 </div>

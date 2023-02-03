@@ -4,9 +4,15 @@ main:
     url: /about/
   - title: "Develop"
     url: /categories/develop/
-  - title: "Infra"
-    url: /categories/infra/
-  - title: "Project"
-    url: /categories/project/
-  - title: "Daily"
-    url: /categories/daily/
+#  - title: "Infra"
+#    url: /categories/infra/
+#  - title: "Project"
+#    url: /categories/project/
+#  - title: "Daily"
+#    url: /categories/daily/
+
+sidebar-main:
+  - title: "Categories"
+    children:
+      - title: "Develop"
+        url: /categories/develop/

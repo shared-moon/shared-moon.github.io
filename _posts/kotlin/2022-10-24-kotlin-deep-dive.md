@@ -51,14 +51,14 @@ toc_sticky: true
 
 - in java
 ```java
-public class Dummy {
-    public static void main(String[] agrs) {
-      List<String> numbers = List.of("1", "2", "3");
-      List<Long> parseNumbers = numbers.stream()
-        .map(Long::parseLong)
-        .collect(Collectors.toList());
-      System.out.println("번호목록 : " + parseNumbers.toString());        
-    }
+public class Example1 {
+  public static void main(String[] agrs) {
+    List<String> numbers = List.of("1", "2", "3");
+    List<Long> parseNumbers = numbers.stream()
+      .map(Long::parseLong)
+      .collect(Collectors.toList());
+    System.out.println("번호목록 : " + parseNumbers.toString());
+  }
 }
 ```
 
@@ -92,40 +92,40 @@ fun main(args: Array<String>) {
 
 - in java
 ```java
-class Dummy {
-    private String name;
-    private int age;
-    
-    public Dummy() {}
-    
-    public Dummy(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setAge(int age) {
-        this.age = age;
-    }
-    
-    public int getAge() {
-        return age;
-    }
+public class Example2 {
+  private String name;
+  private int age;
+
+  public Example2() {}
+
+  public Example2(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
+  }
+
+  public int getAge() {
+    return age;
+  }
 }
 ```
 
 - in kotlin
 ```kotlin
-class Dummy(
+class Example2(
   val name: String,
-  val age: Int,
+  val age: Int
 )
 ```
 
