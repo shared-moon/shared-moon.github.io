@@ -1,9 +1,11 @@
 # main links
 main:
-  - title: "About"
-    url: /about/
-  - title: "Develop"
-    url: /categories/develop/
+#  - title: "About"
+#    url: /about/
+  - title: "Series"
+    url: /categories/series/
+  - title: "Shorts"
+    url: /categories/shorts/
 #  - title: "Infra"
 #    url: /categories/infra/
 #  - title: "Project"
@@ -12,7 +14,7 @@ main:
 #    url: /categories/daily/
 
 sidebar-main:
-  - title: "Categories"
+  - title: "Series"
     children:
-      - title: "Develop"
-        url: /categories/develop/
+      - title: "객체지향 이야기"
+        url: /categories/series/oop/

@@ -111,6 +111,7 @@ layout: default
   {% endif %}
 </div>
 
+{% if page.is_comment %}
 <div>
   <script src="https://utteranc.es/client.js"
           repo="shared-moon/shared-moon.github.io"
@@ -120,3 +121,4 @@ layout: default
           async>
   </script>
 </div>
+{% endif %}

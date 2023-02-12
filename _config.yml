@@ -93,14 +93,15 @@ social:
 
 # Analytics
 analytics:
-  provider               : false # false (default), "google", "google-universal", "google-gtag", "custom"
+  provider               : "google-gtag" # false (default), "google", "google-universal", "google-gtag", "custom"
   google:
     tracking_id          :
+    stream_id            : "G-HT2GRSBMEE"
     anonymize_ip         : # true, false (default)
 
 # Site Author
 author:
-  name             : "문유"
+  name             : "Moon Yoo"
   avatar           : "https://drive.google.com/uc?id=1mrTuFs4IR3PxldcNyPdLhM9D7sDlGpSz"
   bio              : ""
   location         :
@@ -287,8 +288,11 @@ defaults:
       share: false
       related: true
       is_post: true
+      is_comment: true
       sidebar:
         nav: "sidebar-main"
+      toc: true
+      toc_sticky: true
 
   # _pages
   - scope:
@@ -301,6 +305,9 @@ defaults:
       comments: false
       share: false
       related: false
+      is_comment: true
       is_post: false
-
-google_drive_path: "https://drive.google.com/uc?id="
+      sidebar:
+        nav: "sidebar-main"
+      toc: false
+      toc_sticky: true

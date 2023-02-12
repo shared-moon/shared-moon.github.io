@@ -1,24 +1,21 @@
 ---
 
 title:  "코틀린 깊게 알아보기"
-
 excerpt: "설명"
-
 categories:
-
-- Develop
+- 코틀린 이야기
 
 tags:
-
 - Kotlin
+
+related_key: kotlin
 
 last_modified_at: 2022-10-24T02:01:20
 
-toc: true
-toc_sticky: true
----
+published: false
 
 ---
+
 ## 머릿말
 
 이 글은 '**Kotlin in action**'을 베이스로, 코틀린을 코틀린답게 써 보고자 코틀린을 심층 분석하기 위해 작성합니다.  
@@ -45,7 +42,7 @@ toc_sticky: true
 그 결과, 코틀린은 어떠한 스타일이나 패러다임을 강제하기보다 개발자의 취향에 맞게 스타일을 택할 수 있도록 열어두고 비즈니스 로직 작성 시 
 불편할 수 있는 것들을 언어 혹은 기본 라이브러리 차원에서 지원해 주기 때문에 상당히 개발자 친화적인 언어라고 볼 수 있습니다.
 
-<details>
+<details class="foldable">
 <summary>간단 예제</summary>
 <div markdown="1">
 
@@ -86,7 +83,7 @@ fun main(args: Array<String>) {
 불합리를 언어적 차원에서 완벽하게 배제하고, 주로 쓰이는 기능들 (위 예제에서도 언급 된 컬렉션을 다루는 일 같은) 을 사용하기 위한 
 부수적인 준비 과정을 최대한 단축시켜 가독성의 비약적인 향상을 이뤄 냈습니다.
 
-<details>
+<details class="foldable">
 <summary>간단 예제</summary>
 <div markdown="1">
 

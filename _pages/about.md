@@ -3,6 +3,8 @@
 title:  "블로그 소개"  
 permalink: /about/
 
+is_comment: false
+
 ---
 <br/>
 이 블로그는 개인 공부를 위해 만든 블로그입니다
