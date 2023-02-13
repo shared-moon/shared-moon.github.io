@@ -50,7 +50,7 @@ open class Phone(
   }
 }
 ```
-<div class="code-caption">전화밖에 안되는 유물</div>
+<div class="code-caption">[1-1] 전화밖에 안되는 유물</div>
 
 이제 이 Phone을 상속받는 자식 클래스, SmartPhone을 만들어 보겠습니다.
 
@@ -64,7 +64,7 @@ class SmartPhone(
   }
 }
 ```
-<div class="code-caption">핸드폰이 별걸 다 한다</div>
+<div class="code-caption">[1-2] 전화기인가 게임기인가</div>
 
 위의 `: Phone(..)` 부분이 바로 상속을 받는 부분입니다. 아까 상속은 기능의 확장 이라고 말씀 드렸습니다. SmartPhone은
 부모 클래스인 Phone의 `call()`을 그대로 사용 할 수 있죠. 하지만 phoneNumber에는 직접 접근할 수 없습니다. 바로 private으로 선언 되었기 때문이죠.
@@ -89,7 +89,7 @@ fun main() {
     smartPhone.game()
 }
 ```
-<div class="code-caption">phone은 게임을 할 수 없다..</div>
+<div class="code-caption">[1-3] phone은 게임을 할 수 없다..</div>
 </div>
 </details>
 
@@ -130,6 +130,7 @@ fun main() {
       // ...
     }
 ```
+<div class="code-caption">[2-1]</div>
 
 SmartPhone은 자신만의 `call()` 메서드를 가지게 되었습니다! 그리고 자신과 부모의 메서드를 각각 호출하는 `allCall()` 메서드도 새로 생겼네요.
 
@@ -165,8 +166,10 @@ Phone을 완벽히 대체 할 수 있다는 얘기죠. 즉, **자식 클래스�
       // phone.game()
     }
 ```
+<div class="code-caption">[3-1]</div>
 </div>
 </details>
+
 
 분명 SmartPhone을 만들었는데, Phone이라는 타입으로 감싸도 여전히 `call()` 메서드를 사용 할 수 있습니다. 이는 상속의 개념이
 부모의 기능을 전부 가지고 있음을 보장하기 때문에 가능하며, 이렇게 부모 타입으로 캐스팅 하는 것을 `업캐스팅(Upcasting)` 이라고 합니다.
@@ -189,7 +192,7 @@ Phone을 완벽히 대체 할 수 있다는 얘기죠. 즉, **자식 클래스�
 부모 클래스의 멤버를 private하지 않게 바꾸겠다는 의미입니다. 캡슐화가 깨지면, 정보의 은닉과 보호를 하기 어려워 집니다.
 
 💡캡슐화에 대한 자세한 설명은 [이곳](/객체지향%20이야기/oop-3-encapsulation)에서 확인하실 수 있습니다.
-{: .notice }
+{: .notice--info }
 
 ### 강한 결합도
 
@@ -198,29 +201,131 @@ Phone을 완벽히 대체 할 수 있다는 얘기죠. 즉, **자식 클래스�
 
 때문에 부모 클래스의 변경이 자식 클래스 전체에, 나아가 **자식 클래스를 사용하는 모든 코드**에 영향이 미칠 것이고, 이는 유지보수를 어렵게 만드는 원인이 됩니다.
 
+```kotlin
+open class Phone(
+  protected val phoneNumber: String,
+) {
+  open fun call() {
+    println("super send sms $phoneNumber")
+  }
+}
+
+class SmartPhone(
+  phoneNumber: String,
+  private val gameTitle: String,
+) : Phone(phoneNumber = phoneNumber) {
+  // ...
+}
+
+class User {
+  fun call(phone: SmartPhone) {
+    phone.call()
+  }
+}
+```
+<div class="code-caption">[4-1] SmartPhone의 call은 부모의 기능을 그대로 쓰고 있다</div>
+
+이런 상황에서, SmartPhone은 아무것도 변경되지 않지만, Phone의 `call()`이 시그니처가 변경 된다면 어떻게 될까요 ?
+
+```kotlin
+open class Phone(
+  protected val phoneNumber: String,
+) {
+  open fun call(otherPhoneNumber: String) {
+    println("super send sms $otherPhoneNumber")
+  }
+}
+
+class User {
+  fun call(phone: SmartPhone) {
+//    phone.call() 컴파일 에러
+  }
+}
+```
+<div class="code-caption">[4-2] 아무것도 안했는데 갑자기 컴파일 에러가 난다..</div>
+
+이렇게, 부모가 아닌 하위 클래스를 직접 쓰고 있던 부분 전체에 영향을 미치게 됩니다. 지금이야 한군데였지만, 하위 클래스가 다수가 되고
+해당 메서드를 사용하는곳이 수십 수백개가 있다면, 부모 클래스를 변경하고 싶어도 변경 할 수가 없겠죠.
+
+**'근데, 메서드 시그니처가 바뀌면 원래 다 바꿔야 하는 거 아닌가요?'** 라는 의문이 생길 수 있는데요, 맞습니다. 메서드 시그니처가 바뀌면
+해당 메서드를 사용하는 곳은 당연히 변경을 해야 하는데요. 지금은 내가 사용하지 않는 클래스의 변경이 나한테까지 영향을 주는게 문제입니다.
+예시는 메서드 시그니처를 변경해서 보여드렸지만, 사실 이런 경우는 컴파일이 실패하기 때문에 고생을 많이 하면 해결 하기는 그리 어렵지 않습니다.
+
+문제는 내부 구현이 바뀌는 경우가 더 큰데요, 외부에서 어떻게 쓰이고 있는지를 모두 파악해야 하고, 컴파일 시점에 잡아낼 수가 없기 때문에
+더 큰 장애로 이어질 수 있습니다.
+
+💡 이런 단점 때문에 단순 재사용만을 위해 상속을 사용하는 건 지양하고 있으며, 재사용을 위해서는 [상속보단 조합](/shorts/inheritance-vs-composition/)을 이용하는 걸 권장합니다. 
+{: .notice--info }
+
 ### 리스코프 치환 법칙 위배
 
 자식 클래스는 부모 클래스를 완벽히 대체한다고 했습니다. 구조적으론 그렇지만 과연 실제 기능도 무조건 그럴까요? 
 자식 클래스가 부모 클래스의 기능을 마냥 그대로 사용하면 그럴 수도 있겠지만, 애석하게도 자식 클래스는 자기 주장이 강합니다.
 스스로의 기능을 가질 수도 있고, 메서드 오버라이딩을 통해 기능을 재정의 할 수도 있습니다.
 
-예제 클래스를 다음과 같이 바꿔보겠습니다.
+이번엔 예제를 이렇게 바꿔 보겠습니다.
 
 ```kotlin
     open class Phone(
         protected val phoneNumber: String,
+        private var prevPhoneNumber: String = "",
     ) {
-        open fun call() {
-            if ("010-1234-5678".equals(phoneNumber)) {
-                throw IllegalArgumentException("못 쓰는 번호입니다.")
-            }
-            println("super call $phoneNumber")
+        open fun call(otherPhoneNumber: String) {
+            println("super send sms $otherPhoneNumber")
+            prevPhoneNumber = otherPhoneNumber
+        }
+
+        open fun quickCall() {
+            call(prevPhoneNumber)
+        }
+    }
+
+    class User {
+        fun call(phone: Phone) {
+            phone.call("010-1111-2222")
+            phone.quickCall()
         }
     }
 ```
-*부모에 제약이 생겼다*
+<div class="code-caption">[5-1] 고마운 기능이 생겼다</div>
 
-이제 우리는 곳곳에 퍼진 SmartPhone을 쓰던 코드에서 `010-1234-5678` 이 들어오진 않을지 검사를 해야 될겁니다.
+Phone 클래스에 `빠른 전화걸기` 기능이 생겼습니다! 이 기능을 사용하면 가장 최근에 걸었던 번호로 다시 걸 수가 있죠.
+하지만, Phone을 상속받는 SmartPhone이 아래와 같이 구현된다면 어떻게 될까요?
+
+```kotlin
+    class SmartPhone(
+        phoneNumber: String,
+        private val fallbackPhoneNumber: String
+    ) : Phone(phoneNumber = phoneNumber) {
+        override fun quickCall() {
+            call(fallbackPhoneNumber)
+        }
+    }
+```
+<div class="code-caption">[5-2] 정해진 번호로만 전화를 건다</div>
+
+User는 가만히 있는데, 매개변수로 어떤 클래스가 넘어오느냐에 따라 결과가 달라집니다. 이를 리스코프 치환 법칙을 어겼다고 얘기합니다.
+
+<details class="foldable">
+<summary>접기</summary>
+<div markdown="1">
+
+```kotlin
+    fun main() {
+        val phone = Phone("010-1234-5678", "game")
+        val smartPhone = SmartPhone("010-1234-5678", "010-0000-0000")
+        val user = User()
+
+        user.call(phone)
+        user.call(smartPhone)
+    }
+```
+<div class="code-caption">[5-3] call(..)에 넘겨지는 객체에 따라 결과가 다르다</div>
+</div>
+</details>
+
+💡 리스코프 치환 법칙에 대한 자세한 내용은 여기에서 확인하실 수 있습니다.
+{: .notice--info }
 
 ## 마무리
 
