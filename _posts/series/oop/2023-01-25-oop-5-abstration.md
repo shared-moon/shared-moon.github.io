@@ -48,7 +48,7 @@ last_modified_at: 2023-02-05T23:22:55
 
 즉, 추상화를 미리 하고 그것에 맞춰 기능을 구현하는 게 아니라, 추상화를 할 만한 기능들이 존재 할 때 고려하는 게 맞습니다.
 
-💡 물론, 설계 당시에 추상화가 필요한 부분을 고려 할 수도 있습니다. 이건 어느정도 경험이 쌓인 개발자 본인의 역량으로 중간 과정을 건너 뛴 경우입니다.
+💡 개발자의 역량에 따라 설계 당시에 추상화가 필요한 부분을 고려 할 수도 있습니다.
 {: .notice--warning }
 
 이제 클래스가 가지는 특성을 정의하는 과정을 한번 살펴 보겠습니다.
@@ -61,27 +61,27 @@ last_modified_at: 2023-02-05T23:22:55
 이렇게 크게 `지불과 청구` 두 가지 기능이 있다고 하고 생각 해 보겠습니다.
 
 ```kotlin
-    class CreditCard {
-        fun pay() {
-            println("신용카드로 비용을 지불했습니다.")
-        }
-
-        fun billing() {
-            println("매월 26일 카드값이 청구됩니다.")
-        }
+class CreditCard {
+    fun pay() {
+        println("신용카드로 비용을 지불했습니다.")
     }
+
+    fun billing() {
+        println("매월 26일 카드값이 청구됩니다.")
+    }
+}
 ```
 <div class="code-caption">[1-1] 신용카드는 결제일이 정해져 있다</div>
 
 이 카드를 사용하려면, 카드를 인식해 비용을 결제하고 결제 된 금액을 청구 할 수 있는 포스기가 필요 할 것 같네요
 
 ```kotlin
-    class Pos {
-        fun sell(creditCard: CreditCard) {
-            creditCard.pay()
-            creditCard.billing()
-        }
+class Pos {
+    fun sell(creditCard: CreditCard) {
+        creditCard.pay()
+        creditCard.billing()
     }
+}
 ```
 <div class="code-caption">[1-2] 신용카드만 받을 수 있는 포스기</div>
 
@@ -95,38 +95,42 @@ last_modified_at: 2023-02-05T23:22:55
 그래서 우리는 아래와 같이 체크카드를 정의했습니다.
 
 ```kotlin
-    class CheckCard {
-        fun pay() {
-            println("체크카드로 비용을 지불했습니다.")
-        }
-
-        fun billing() {
-            println("계좌로 카드값이 청구됩니다.")
-        }
+class CheckCard {
+    fun pay() {
+        println("체크카드로 비용을 지불했습니다.")
     }
+
+    fun billing() {
+        println("계좌로 카드값이 청구됩니다.")
+    }
+}
 ```
 <div class="code-caption">[2-1] 체크카드는 돈이 바로 빠져나간다</div>
 
 그리고 포스기가 체크카드도 이용 할 수 있도록 만들었습니다.
 
 ```kotlin
-    class Pos {
-        fun sell(creditCard: CreditCard) {
-            creditCard.pay()
-            creditCard.billing()
-        }
-
-        fun sell(checkCard: CheckCard) {
-            checkCard.pay()
-            checkCard.billing()
-        }
+class Pos {
+    fun sell(creditCard: CreditCard) {
+        creditCard.pay()
+        creditCard.billing()
     }
+
+    fun sell(checkCard: CheckCard) {
+        checkCard.pay()
+        checkCard.billing()
+    }
+}
 ```
 <div class="code-caption">[2-2] Ctrl + C + V</div>
 
 우리는 메서드의 다형성을 이용해서 신용카드와 체크카드를 둘 다 사용할 수 있는 포스기를 만들어냈습니다!
-이제 요구사항도 만족 시켰으니, 개발은 끝났..을까요? 평생 이대로 사용하기만 한다면 좋겠지만, 고객의 요구사항은 나날이 발전합니다. 지금은 두개밖에 없지만
-각 카드사별로 무수히 많은 카드들을 사용 가능하게 바꾼다면 어떻게 될까요? `Pos` 클래스는 카드의 종류 별로 `sell(..)`메서드를 추가해야 할겁니다.
+이제 요구사항도 만족 시켰으니 개발은 끝난걸까요?
+
+평생 이대로 사용하기만 한다면 좋겠지만, 고객의 요구사항은 늘 변화합니다.
+지금은 두개밖에 없지만 각 카드사별로 무수히 많은 카드들을 사용 가능하게 바꾼다면 어떻게 될까요?
+
+`Pos` 클래스는 카드의 종류 별로 `sell(..)`메서드를 추가해야 할겁니다.
 
 이런 구조가 바로 개방폐쇄 원칙에서 말하는 **확장에 열려있지 않은** 구조입니다. 새로운 기능이 추가가 될 때마다 Pos 클래스가 변경이 되어야 하니까요.
 
@@ -134,9 +138,11 @@ last_modified_at: 2023-02-05T23:22:55
 
 결국 우리가 바라는 건 이런겁니다. **새로운 카드가 추가 되더라도 Pos 클래스는 변경이 없었으면 좋겠다**
 
-어떻게 바꿀 수 있을지 두 개의 sell 메서드를 한 번 살펴 보겠습니다. 자세히 보니, 두개의 sell 메서드는 관심사가 같습니다.
-비용을 `지불` 하고 대금을 `청구` 하는 절차를 가지고 있죠. 그렇다면, Pos의 입장에서는 넘겨받는 파라미터를
-**어떻게 하는지는 내 알바 아니고, 지불이랑 청구를 할 수 있는 거 아무거나** 라고 정의할 수 있지 않을까요?
+어떻게 바꿀 수 있을지 두 개의 sell 메서드를 한 번 살펴 보겠습니다.
+
+자세히 보니, 두개의 sell 메서드는 관심사가 같습니다. 비용을 `지불` 하고 대금을 `청구` 하는 절차를 가지고 있죠.
+
+그렇다면, Pos의 입장에서는 넘겨받는 파라미터를 **어떻게 하는지는 내 알바 아니고, 지불이랑 청구를 할 수 있는 거 아무거나** 라고 정의할 수 있지 않을까요?
 
 이것을 조금 문장을 다듬어보면 **구체적이지 않은 지불과 청구를 할 수 있는 특성** 이라고 표현 할 수 있고, 이 과정을 `추상화` 라고 얘기합니다.
 
@@ -148,7 +154,9 @@ last_modified_at: 2023-02-05T23:22:55
 바디가 비어있는 메서드를 `추상 메서드(Abstract Method)` 라고 부릅니다.
 
 우리는 `지불`과 `청구`를 추상메서드로 정의해야 하는데요, 이 추상 메서드를 정의할 수 있는 방법은 `추상 클래스(Abstract Class)`와 `인터페이스(Interface)`
-가 있습니다. 둘 다 추상 메서드 선언이 가능하지만, 사용하기 위해선 추상 클래스는 **상속**을 받아야 하고, 인터페이스는 **구현**을 해야 합니다.
+가 있습니다.
+
+둘 다 추상 메서드 선언이 가능하지만, 사용하기 위해선 추상 클래스는 **상속**을 받아야 하고, 인터페이스는 **구현**을 해야 합니다.
 둘은 용도가 완전히 다르기 때문에 이번 설명에서는 인터페이스를 대상으로 하겠습니다.
 
 💡 상속이란 **기능의 확장**을 위한 것이기 때문에 추상 클래스는 기능의 확장을 좀 더 유연하게 하기 위해 추상 메서드를 지원하는 것이지
@@ -158,10 +166,10 @@ last_modified_at: 2023-02-05T23:22:55
 인터페이스는 만드는 방식이 클래스와 유사합니다. `지불`과 `청구`가 정의 된 Card라는 인터페이스를 만들어 보겠습니다.
 
 ```kotlin
-    interface Card {
-        fun pay()
-        fun billing()
-    }
+interface Card {
+    fun pay()
+    fun billing()
+}
 ```
 <div class="code-caption">[3-1]메서드에 내용이 없다</div>
 
@@ -170,30 +178,31 @@ last_modified_at: 2023-02-05T23:22:55
 Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내용은 잘 모르는 상태입니다. 그럼 이 특성을 부여받은 클래스는 어떤 모습이 될까요?
 
 ```kotlin
-    class CreditCard: Card {
-        override fun pay() {
-            println("신용카드로 비용을 지불했습니다.")
-        }
-
-        override fun billing() {
-            println("매월 26일 카드값이 청구됩니다.")
-        }
+class CreditCard: Card {
+    override fun pay() {
+        println("신용카드로 비용을 지불했습니다.")
     }
 
-    class CheckCard: Card {
-        override fun pay() {
-            println("체크카드로 비용을 지불했습니다.")
-        }
-
-        override fun billing() {
-            println("계좌로 카드값이 청구됩니다.")
-        }
+    override fun billing() {
+        println("매월 26일 카드값이 청구됩니다.")
     }
+}
+
+class CheckCard: Card {
+    override fun pay() {
+        println("체크카드로 비용을 지불했습니다.")
+    }
+
+    override fun billing() {
+        println("계좌로 카드값이 청구됩니다.")
+    }
+}
 ```
 <div class="code-caption">[3-2] 구체적인 내용이 정의 되어 있다</div>
 
-이제 CreditCard와 CheckCard는 Card라는 특성을 가지고 있습니다. Card라는 특성은 `지불`과 `청구`를 할 수 있었죠.
-즉, CreditCard와 CheckCard는 `지불`과 `청구`를 할 수 있다고 보증이 된 클래스가 된 거죠.
+이제 CreditCard와 CheckCard는 Card라는 특성을 가지고 있습니다.
+
+Card는 `지불`과 `청구`를 할 수 있었죠. 즉, CreditCard와 CheckCard는 `지불`과 `청구`를 할 수 있다고 보증이 된 클래스가 된 거죠.
 
 💡 추상 메서드는 내용이 없는 껍데기이기 때문에 이를 상속받거나 구현하게 되면 반드시 오버라이딩을 해 주도록 언어 레벨에서 강제하고 있습니다.
 {: .notice--info }
@@ -201,17 +210,20 @@ Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내�
 그럼 `Pos` 클래스에서는 어떤 변화가 생겼는지 살펴 보겠습니다.
 
 ```kotlin
-    class Pos {
-        fun sell(card: Card) {
-            card.pay()
-            card.billing()
-        }
+class Pos {
+    fun sell(card: Card) {
+        card.pay()
+        card.billing()
     }
+}
 ```
 <div class="code-caption">[3-3] 파라미터로 인터페이스를 받는다</div>
 
-파라미터의 타입으로 각각의 구체적인 클래스가 아닌 인터페이스를 명시하고 있습니다. 이로써 Pos가 원했던 **어떻게 하는지는 잘 모르겠고, 지불과 결제를 할 수 있는 것**
-을 받아서 처리 할 수 있게 되었죠. `sell()` 메서드는 이제 Card라는 인터페이스가 구현이 되어있기만 하면 어떤 타입이라도 다 처리 할 수가 있죠.
+파라미터의 타입으로 각각의 구체적인 클래스가 아닌 인터페이스를 명시하고 있습니다.
+
+이로써 Pos가 원했던 **어떻게 하는지는 잘 모르겠고, 지불과 결제를 할 수 있는 것**을 받아서 처리 할 수 있게 되었고,
+`sell()` 메서드는 이제 Card라는 인터페이스가 구현이 되어있기만 하면 어떤 타입이라도 다 처리 할 수가 있죠.
+
 이렇게 여러개의 비슷한 기능에서 특성을 뽑아내고, 그 특성에 맞게 인터페이스를 만들어 각각 구현 할 수 있도록 하는 것을 `추상화를 한다` 라고 합니다.
 
 💡 추상화를 통해 구현체가 아닌 인터페이스에 의존는 구조를 만들도록 권장하는 원칙을 `개방폐쇄의 원칙` 이라고 합니다.
@@ -220,6 +232,7 @@ Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내�
 ## 추상화 주의사항
 
 추상화에도 명백한 단점이 존재합니다. 바로 **가독성이 저하**된다는 것이죠.
+
 앞에서 여러번 말씀드린 추상화의 **구체적이지 않다**는 특징 때문에, 인터페이스를 의존하는 기능은 어떤 구현체가 오느냐에 따라
 동작이 달라집니다. 필연적으로 코드가 현재 컨텍스트를 이탈하므로 직관적이지가 않죠.
 
@@ -227,15 +240,18 @@ Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내�
 
 ### 추상화의 대상
 
-추상화는 특성을 추려내는 작업이라고 했습니다. 그렇기 때문에 무엇을 추상화 할 지를 결정하는 건 아주 중요한 일입니다.
+추상화는 특성을 정의하는 작업이라고 했습니다. 그렇기 때문에 무엇을 추상화 할 지를 결정하는 건 아주 중요한 일입니다.
+
 만약, 위의 예제에서 Card가 아닌 Pos에 집중하여 `sell()` 을 추상화 했다면 어떻게 됐을까요?
 
 최종적으로 Pos를 사용하는 입장에선 마찬가지로 변경이 적어질 수 있으나, 사용할 카드가 늘어 날 수록 Pos의 구현체가
 늘어나는 주객전도의 현상을 보게 될 겁니다.
 
 이번 예제는 워낙 간단한 내용이라 당연히 그런 판단을 할 리는 없겠지만, 실무에서는 워낙 복잡한 비즈니스가 얽혀 있기 때문에
-추상화를 할 대상을 잘 못 선정하는 경우도 생깁니다. 문제는 이런 일이 발생했을 때 상황을 인식 하는 건 다음 요구사항이
-들어왔을 때라는 거죠. 클래스 디자인은 방법이 정말 무궁무진해서 그 당시에는 정답처럼 보여 놓칠 수가 있습니다.
+추상화를 할 대상을 잘 못 선정하는 경우도 생깁니다.
+
+문제는 이런 일이 발생했을 때 상황을 인식 하는 건 다음 요구사항이 들어왔을 때라는 거죠.
+클래스 디자인은 방법이 정말 무궁무진해서 그 당시에는 정답처럼 보여 놓칠 수가 있습니다.
 
 ### 추상화의 레벨과 범위
 
@@ -256,43 +272,43 @@ Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내�
 `지불`과 `청구`를 각각 추상화 하는게 아니라 `결제`라는 하나의 특성으로 묶어보면, 아래와 같은 인터페이스가 만들어집니다.
 
 ```kotlin
-    interface Payment {
-        fun pay()
-    }
+interface Payment {
+    fun pay()
+}
 ```
 <div class="code-caption">[4-1] 결제를 추상화했다</div>
 
 그리고 이를 구현하는 구현체들은 이렇게 만들어지겠죠?
 
 ```kotlin
-    class CreditCard: Payment {
-        override fun pay() {
-            println("신용카드로 비용을 지불했습니다.")
-            billing()
-        }
-
-        private fun billing() {
-            println("매월 26일 카드값이 청구됩니다.")
-        }
+class CreditCard: Payment {
+    override fun pay() {
+        println("신용카드로 비용을 지불했습니다.")
+        billing()
     }
 
-    class CheckCard: Payment {
-        override fun pay() {
-            println("체크카드로 비용을 지불했습니다.")
-            billing()
-        }
+    private fun billing() {
+        println("매월 26일 카드값이 청구됩니다.")
+    }
+}
 
-        private fun billing() {
-            println("계좌로 카드값이 청구됩니다.")
-        }
+class CheckCard: Payment {
+    override fun pay() {
+        println("체크카드로 비용을 지불했습니다.")
+        billing()
     }
 
-    class Cash: Payment {
-        override fun pay() {
-            println("현금으로 결제했습니다.")
-        }
-
+    private fun billing() {
+        println("계좌로 카드값이 청구됩니다.")
     }
+}
+
+class Cash: Payment {
+    override fun pay() {
+        println("현금으로 결제했습니다.")
+    }
+
+}
 ```
 <div class="code-caption">[4-2] 구현체들의 권한이 강해졌다.</div>
 
@@ -311,15 +327,15 @@ Card라는 특성은 지불과 청구를 할 수 있지만 그 구체적인 내�
 Card 라는 인터페이스를 이렇게 재정의 해 볼 수 있을 것 같습니다.
 
 ```kotlin
-    interface Payment {
-        fun pay()
-    }
+interface Payment {
+    fun pay()
+}
 
-    interface Billable {
-        fun billing()
-    }
+interface Billable {
+    fun billing()
+}
 
-    interface Card: Payment, Billable
+interface Card: Payment, Billable
 ```
 <div class="code-caption">[5-1] 인터페이스를 잘게 쪼갰다</div>
 
@@ -327,32 +343,31 @@ Card 라는 인터페이스를 이렇게 재정의 해 볼 수 있을 것 같습
 이제 우리는 지불 방식에 따라 다른 인터페이스를 구현할 수 있는 선택권을 얻었습니다.
 
 ```kotlin
-    class CreditCard: Card {
-        override fun pay() {
-            println("신용카드로 비용을 지불했습니다.")
-        }
-
-        override fun billing() {
-            println("매월 26일 카드값이 청구됩니다.")
-        }
+class CreditCard: Card {
+    override fun pay() {
+        println("신용카드로 비용을 지불했습니다.")
     }
 
-    class CheckCard: Card {
-        override fun pay() {
-            println("체크카드로 비용을 지불했습니다.")
-        }
+    override fun billing() {
+        println("매월 26일 카드값이 청구됩니다.")
+    }
+}
 
-        override fun billing() {
-            println("계좌로 카드값이 청구됩니다.")
-        }
+class CheckCard: Card {
+    override fun pay() {
+        println("체크카드로 비용을 지불했습니다.")
     }
 
-    class Cash: Payment {
-        override fun pay() {
-            println("현금으로 결제했습니다.")
-        }
-
+    override fun billing() {
+        println("계좌로 카드값이 청구됩니다.")
     }
+}
+
+class Cash: Payment {
+    override fun pay() {
+        println("현금으로 결제했습니다.")
+    }
+}
 ```
 <div class="code-caption">[5-2] 결제 유형에 따라 다른 인터페이스를 구현한다</div>
 
@@ -364,6 +379,7 @@ Card 라는 인터페이스를 이렇게 재정의 해 볼 수 있을 것 같습
 추상화의 목적은 `유지보수의 용이성` 이며 그를 위해 재사용성 증대와 변경 최소화를 하기 위한 방안을 제시합니다. 다만, 코드의
 직관성이 떨어질 수 있기 때문에 적절한 범위에 적당히 사용 할 수 있는 스킬을 익혀야 하고 이건 많이 해 보는 수 밖에 없습니다.
 
-특히 추상화는 가독성에 영향을 미치는 터라 반드시 제3자의 의견을 많이 들어 볼 것을 추천합니다. 추상화를 진행 한 뒤의 코드는 머릿속에
-그림이 그려졌을 때와 아닐 때 가독성이 확연히 차이가 나기 때문에 만든 사람이 보면 그럴듯 해 보이지만 다른 사람이 보면 제 3외국어 같은
-느낌을 받을 수도 있습니다.
+특히 추상화는 가독성에 영향을 미치는 터라 반드시 제3자의 의견을 많이 들어 볼 것을 추천합니다.
+
+추상화를 진행 한 뒤의 코드는 머릿속에 그림이 그려졌을 때와 아닐 때 가독성이 확연히 차이가 나기 때문에
+만든 사람이 보면 그럴듯 해 보이지만 다른 사람이 보면 제 3외국어 같은 느낌을 받을 수도 있습니다.

@@ -110,28 +110,28 @@ fun main() {
 두 클래스를 변경 해 보겠습니다.
 
 ```kotlin
-    open class Phone(
-        protected val phoneNumber: String,
-    ) {
-        open fun call() {
-            println("super call $phoneNumber")
-        }
+open class Phone(
+    protected val phoneNumber: String,
+) {
+    open fun call() {
+        println("super call $phoneNumber")
     }
+}
 
-    class SmartPhone(
-        phoneNumber: String,
-        private val gameTitle: String,
-    ) : Phone(phoneNumber = phoneNumber) {
-        override fun call() {
-            println("child call $phoneNumber")
-        }
-        
-        fun allCall() {
-            this.call()
-            super.call()
-        }
-      // ...
+class SmartPhone(
+    phoneNumber: String,
+    private val gameTitle: String,
+) : Phone(phoneNumber = phoneNumber) {
+    override fun call() {
+        println("child call $phoneNumber")
     }
+    
+    fun allCall() {
+        this.call()
+        super.call()
+    }
+  // ...
+}
 ```
 <div class="code-caption">[2-1]</div>
 
@@ -162,12 +162,12 @@ Phone을 완벽히 대체 할 수 있다는 얘기죠. 즉, **자식 클래스�
 <div markdown="1">
 
 ```kotlin
-    fun main() {
-      val smartPhone = SmartPhone("010-1111-2222", "game")
-      val phone: Phone = smartPhone
-      phone.call()
-      // phone.game()
-    }
+fun main() {
+  val smartPhone = SmartPhone("010-1111-2222", "game")
+  val phone: Phone = smartPhone
+  phone.call()
+  // phone.game()
+}
 ```
 <div class="code-caption">[3-1]</div>
 </div>
@@ -274,26 +274,26 @@ class User {
 이번엔 예제를 이렇게 바꿔 보겠습니다.
 
 ```kotlin
-    open class Phone(
-        protected val phoneNumber: String,
-        private var prevPhoneNumber: String = "",
-    ) {
-        open fun call(otherPhoneNumber: String) {
-            println("super send sms $otherPhoneNumber")
-            prevPhoneNumber = otherPhoneNumber
-        }
-
-        open fun quickCall() {
-            call(prevPhoneNumber)
-        }
+open class Phone(
+    protected val phoneNumber: String,
+    private var prevPhoneNumber: String = "",
+) {
+    open fun call(otherPhoneNumber: String) {
+        println("super send sms $otherPhoneNumber")
+        prevPhoneNumber = otherPhoneNumber
     }
 
-    class User {
-        fun call(phone: Phone) {
-            phone.call("010-1111-2222")
-            phone.quickCall()
-        }
+    open fun quickCall() {
+        call(prevPhoneNumber)
     }
+}
+
+class User {
+    fun call(phone: Phone) {
+        phone.call("010-1111-2222")
+        phone.quickCall()
+    }
+}
 ```
 <div class="code-caption">[5-1] 고마운 기능이 생겼다</div>
 
@@ -301,14 +301,14 @@ Phone 클래스에 `빠른 전화걸기` 기능이 생겼습니다! 이 기능�
 하지만, Phone을 상속받는 SmartPhone이 아래와 같이 구현된다면 어떻게 될까요?
 
 ```kotlin
-    class SmartPhone(
-        phoneNumber: String,
-        private val fallbackPhoneNumber: String
-    ) : Phone(phoneNumber = phoneNumber) {
-        override fun quickCall() {
-            call(fallbackPhoneNumber)
-        }
+class SmartPhone(
+    phoneNumber: String,
+    private val fallbackPhoneNumber: String
+) : Phone(phoneNumber = phoneNumber) {
+    override fun quickCall() {
+        call(fallbackPhoneNumber)
     }
+}
 ```
 <div class="code-caption">[5-2] 정해진 번호로만 전화를 건다</div>
 
@@ -319,14 +319,14 @@ User는 가만히 있는데, 매개변수로 어떤 클래스가 넘어오느냐
 <div markdown="1">
 
 ```kotlin
-    fun main() {
-        val phone = Phone("010-1234-5678", "game")
-        val smartPhone = SmartPhone("010-1234-5678", "010-0000-0000")
-        val user = User()
+fun main() {
+    val phone = Phone("010-1234-5678", "game")
+    val smartPhone = SmartPhone("010-1234-5678", "010-0000-0000")
+    val user = User()
 
-        user.call(phone)
-        user.call(smartPhone)
-    }
+    user.call(phone)
+    user.call(smartPhone)
+}
 ```
 <div class="code-caption">[5-3] call(..)에 넘겨지는 객체에 따라 결과가 다르다</div>
 </div>
