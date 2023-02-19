@@ -23,6 +23,9 @@ last_modified_at: 2023-02-05T23:22:55
 
 ---
 
+💡본문의 모든 예제는 [이곳](https://github.com/shared-moon/blog-example/tree/main/src/main/kotlin/com/example/moonyoo/oop/abstration)에서 확인하실 수 있습니다.
+{: .notice--info }
+
 ## 추상화(Abstration)
 
 추상화란, **말그대로 추상적으로 바꾸는 일**을 말합니다. 추상적이라는 건 무슨 뜻일까요? 우리는 현실세계에서 종종 추상적이다 라는 말을 씁니다.
